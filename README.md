@@ -17,3 +17,8 @@ Since this project is built for an interview, I wanna ensure that we focus on th
 - Since resumes contain highly confidential data, interviewers and HR must pass the 2FA before downloading them.
 - ~~Analysing resumes and making a score for each candidates.~~
 - Records every operation for tracking purposes.
+
+I also simplified user authentication for users. You can easily use the `X-FLIQT-USER` header to interact with API as a specific user.
+```sh
+$ curl -H 'X-FLIQT-USER: [candidate 1's id]' http://localhost:8080/api/applications
+```
