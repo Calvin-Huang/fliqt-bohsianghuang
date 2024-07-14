@@ -7,7 +7,9 @@ Since this project is built for an interview, I wanna ensure that we focus on th
 ## Functional requirements
 - There are 3 different roles of characters using this system: candidate, interviewer, HR.
 - Candidates can search for jobs and filter by title, job description, salary range and job type.
+- Candidates can check their application status.
 - ~~HR can use the system to manage schedules and status.~~
+- HR can manage applications from candidates.
 - A job can be created/updated, or closed by HR.
 - ~~The system can organize interview schedule.~~
 
