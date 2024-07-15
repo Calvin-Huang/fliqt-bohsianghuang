@@ -1,0 +1,381 @@
+openapi: "3.0.3"
+info:
+  title: HR system API
+  version: "1.0"
+servers:
+  - url: https://localhost:8080/api
+
+components:
+  parameters:
+    X-FLIQT-USER:
+      name: X-FLIQT-USER
+      description: "Set current user by ID"
+      example: cqa2iqgcvavkhusfkebg
+      in: header
+      required: true
+      schema:
+        type: string
+  schemas:
+    PaginatedResponse:
+      type: object
+      properties:
+        items:
+          type: "array"
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/Job"
+              - $ref: "#/components/schemas/Application"
+        next_token:
+          type: "string"
+        total:
+          type: "integer"
+    Job:
+      type: object
+      required:
+        - title
+        - company
+        - job_type
+        - salary
+      properties:
+        title:
+          type: string
+        company:
+          type: string
+        job_type:
+          type: string
+          example: full-time
+        salary:
+          type: array
+          items:
+            type: integer
+          example: [100000, 200000]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        role:
+          type: string
+          enum: ["HR", "Interviewer", "Candidate"]
+          example: HR
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Application:
+      required:
+        - job_id
+        - resume_object_key
+      type: object
+      properties:
+        job_id:
+          type: string
+        user_id:
+          type: string
+        status:
+          type: string
+          enum: ["pending", "accepted", "rejected"]
+          example: pending
+        resume_object_key:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+paths:
+  /jobs:
+    get:
+      parameters:
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            minimum: 5
+            maximum: 40
+            default: 20
+        - name: next_token
+          in: query
+          schema:
+            type: string
+        - name: keyword
+          description: "Search by title or company"
+          in: query
+          schema:
+            type: string
+        - name: job_type
+          in: query
+          schema:
+            type: string
+            enum: ["full-time", "part-time", "contract"]
+        - name: salary
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              minimum: 0
+              maximum: 100000
+              example: 200000
+          style: form
+          explode: true
+      responses:
+        "200":
+          description: "A list of jobs"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/PaginatedResponse"
+                  - properties:
+                      items:
+                        type: "array"
+                        items:
+                          $ref: "#/components/schemas/Job"
+    # Only HR can create jobs, so we need to add security
+    post:
+      parameters:
+        - $ref: "#/components/parameters/X-FLIQT-USER"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Job"
+      responses:
+        "201":
+          description: "Job created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Job"
+        "401":
+          description: "Unauthorized"
+  /jobs/{job_id}:
+    get:
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Job details"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Job"
+        "404":
+          description: "Job not found"
+    put:
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/X-FLIQT-USER"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Job"
+      responses:
+        "200":
+          description: "Job updated"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Job"
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "Job not found"
+    delete:
+      description: "Close a job"
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/X-FLIQT-USER"
+      responses:
+        "204":
+          description: "Job closed"
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "Job not found"
+  /jobs/{job_id}/applications:
+    get:
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            minimum: 5
+            maximum: 40
+            default: 20
+        - name: next_token
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: ["pending", "accepted", "rejected"]
+      responses:
+        "200":
+          description: "Job's applications"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/PaginatedResponse"
+                  - properties:
+                      items:
+                        type: "array"
+                        items:
+                          $ref: "#/components/schemas/Application"
+  /applications:
+    get:
+      description: "Candidate's applications (HR can see all)"
+      parameters:
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            minimum: 5
+            maximum: 40
+            default: 20
+        - name: next_token
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: ["pending", "accepted", "rejected"]
+        - name: keyword
+          description: "Search by job title or company"
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Candidate's applications"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/PaginatedResponse"
+                  - properties:
+                      items:
+                        type: "array"
+                        items:
+                          $ref: "#/components/schemas/Application"
+    post:
+      description: "Candidate applies for a job"
+      parameters:
+        - $ref: "#/components/parameters/X-FLIQT-USER"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Application"
+      responses:
+        "201":
+          description: "Candidate applied"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+        "401":
+          description: "Unauthorized"
+  /files:
+    post:
+      summary: "Get a pre-signed URL to upload a file"
+      description: "Pre-signed URL will expire in 5 minutes"
+      parameters:
+        - $ref: "#/components/parameters/X-FLIQT-USER"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content_type:
+                  type: string
+                file_name:
+                  type: string
+                file_size:
+                  type: integer
+      responses:
+        "200":
+          description: "URL to upload file"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object_key:
+                    type: string
+                  url:
+                    type: string
+                  metadata:
+                    type: object
+                    additionalProperties:
+                      type: string
+        "401":
+          description: "Unauthorized"
+  /files/{object_key}:
+    get:
+      summary: "Get a pre-signed URL to download a file"
+      description: "Pre-signed URL will expire in 5 minutes"
+      parameters:
+        - name: object_key
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/X-FLIQT-USER"
+        - name: passcode
+          description: "TOTP passcode to download file"
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "URL to download file"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "File not found"
