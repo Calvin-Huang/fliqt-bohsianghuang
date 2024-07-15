@@ -32,9 +32,20 @@ type JobFilterParams struct {
 	JobType   string `form:"job_type,omitempty"`
 }
 
+type JobResponseDTO struct {
+	ID        string `json:"id"`
+	Title     string `json:"title"`
+	Company   string `json:"company"`
+	JobType   string `json:"job_type"`
+	SalaryMin int    `json:"salary_min"`
+	SalaryMax int    `json:"salary_max"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+}
+
 // ListJobs returns a list of jobs
-func (r *JobRepository) ListJobs(ctx context.Context, filterParams JobFilterParams) (model.PaginationResponse[model.Job], error) {
-	var jobs []model.Job
+func (r *JobRepository) ListJobs(ctx context.Context, filterParams JobFilterParams) (model.PaginationResponse[JobResponseDTO], error) {
+	var jobs []JobResponseDTO
 	query := r.db.WithContext(ctx).Model(&model.Job{}).Order("id DESC")
 
 	if filterParams.Keyword != "" {
@@ -51,7 +62,7 @@ func (r *JobRepository) ListJobs(ctx context.Context, filterParams JobFilterPara
 	}
 
 	var total int64
-	var result model.PaginationResponse[model.Job]
+	var result model.PaginationResponse[JobResponseDTO]
 
 	if err := query.Count(&total).Error; err != nil {
 		return result, err
