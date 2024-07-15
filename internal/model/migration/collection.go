@@ -11,6 +11,7 @@ import (
 
 func AllMigrations() []*gormigrate.Migration {
 	return []*gormigrate.Migration{
+		Migration0001(),
 		// ... other migrations
 	}
 }
