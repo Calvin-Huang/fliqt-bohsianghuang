@@ -22,3 +22,22 @@ I also simplified user authentication for users. You can easily use the `X-FLIQT
 ```sh
 $ curl -H 'X-FLIQT-USER: [candidate 1's id]' http://localhost:8080/api/applications
 ```
+
+# How to Run the Code
+## Environment Variables
+| Name | Description | Default |
+|------|-------------|---------|
+|`DB_HOST`| DB host (This project only supports MySQL) | `localhost`|
+|`DB_PORT`| DB port (This project only supports MySQL) | `3306`|
+|`DB_USER`| DB username | `root`|
+|`DB_PASSWORD`| DB password | `password` |
+|`DB_TIMEZONE`| DB timezone | `Etc/UTC` |
+|`DB_NAME`| DB name | `fliqt_test`|
+|`DB_MAX_IDLE`| DB maximum connections in idle connection pool | 2 |
+|`DB_MAX_CONN`| DB maximum number of open connections | 10 |
+|`DB_MAX_LIFE`| DB maximum amount of time  amount of time a connection may be reused | 2 |
+|`DEBUG`| Config for debugging mode | `false` |
+|`PRETTY_LOG`| Easier to read the log | `false` |
+|`TRACER_ENDPOINT`| The tracer collector's endpoint | `localhost:4317` |
+
+
