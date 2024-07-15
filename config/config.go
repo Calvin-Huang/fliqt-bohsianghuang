@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"strconv"
 	"time"
@@ -63,5 +64,5 @@ func getEnvInt(key string, defaultValue int) int {
 
 func (c *Config) GetDBDSN() string {
 	// MySQL DSN
-	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true&loc=%s", c.DBUser, c.DBPassword, c.DBHost, c.DBPort, c.DBName, c.DBTimezone)
+	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true&loc=%s", c.DBUser, c.DBPassword, c.DBHost, c.DBPort, c.DBName, url.QueryEscape(c.DBTimezone))
 }
