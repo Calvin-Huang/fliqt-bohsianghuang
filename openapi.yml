@@ -44,11 +44,10 @@ components:
         job_type:
           type: string
           example: full-time
-        salary:
-          type: array
-          items:
-            type: integer
-          example: [100000, 200000]
+        salary_min:
+          type: integer
+        salary_max:
+          type: integer
         created_at:
           type: string
           format: date-time
@@ -117,17 +116,14 @@ paths:
           schema:
             type: string
             enum: ["full-time", "part-time", "contract"]
-        - name: salary
+        - name: salary_min
           in: query
           schema:
-            type: array
-            items:
-              type: string
-              minimum: 0
-              maximum: 100000
-              example: 200000
-          style: form
-          explode: true
+            type: integer
+        - name: salary_max
+          in: query
+          schema:
+            type: integer
       responses:
         "200":
           description: "A list of jobs"
