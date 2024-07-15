@@ -40,4 +40,21 @@ $ curl -H 'X-FLIQT-USER: [candidate 1's id]' http://localhost:8080/api/applicati
 |`PRETTY_LOG`| Easier to read the log | `false` |
 |`TRACER_ENDPOINT`| The tracer collector's endpoint | `localhost:4317` |
 
+# Migrations
+This project uses `github.com/go-gormigrate/gormigrate` as the migrator base and includes a small program to execute migrations.
+
+```sh
+# Execute all migrations when no specific version is specified.
+$ go run cmd/migrate/main.go
+
+# Execute migrations up to a specific version.
+$ go run cmd/migrate/main.go -version=10
+
+# Rollback all migrations.
+$ go run cmd/migrate/main.go -rollback
+
+# Rollback migrations to a specific version.
+$ go run cmd/migrate/main.go -rollback -version=10
+$ go run cmd/migrate/main.go -rollback-to=10
+```
 
