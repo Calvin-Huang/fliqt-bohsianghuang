@@ -8,6 +8,8 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog"
 	"gorm.io/gorm"
+
+	"fliqt/internal/repository"
 )
 
 var (
@@ -21,6 +23,8 @@ var errStatusMap = map[error]int{
 	ErrNotFound:            http.StatusNotFound,
 	ErrBadRequest:          http.StatusBadRequest,
 	ErrForbidden:           http.StatusForbidden,
+
+	repository.ErrJobSalaryRange: http.StatusBadRequest,
 }
 
 func ErrorHandler(logger *zerolog.Logger) gin.HandlerFunc {
