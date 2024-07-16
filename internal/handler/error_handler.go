@@ -13,12 +13,14 @@ import (
 var (
 	ErrNotFound   = errors.New("not found")
 	ErrBadRequest = errors.New("bad request")
+	ErrForbidden  = errors.New("forbidden")
 )
 
 var errStatusMap = map[error]int{
 	gorm.ErrRecordNotFound: http.StatusNotFound,
 	ErrNotFound:            http.StatusNotFound,
 	ErrBadRequest:          http.StatusBadRequest,
+	ErrForbidden:           http.StatusForbidden,
 }
 
 func ErrorHandler(logger *zerolog.Logger) gin.HandlerFunc {
