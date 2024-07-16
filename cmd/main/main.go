@@ -40,6 +40,7 @@ func main() {
 
 	// Initialize repositories
 	jobRepo := repository.NewJobRepository(db, logger)
+	applicationRepo := repository.NewApplicationRepository(db, logger)
 
 	// Initialize services
 	authService := service.NewAuthService(db)
@@ -59,6 +60,7 @@ func main() {
 		app,
 		logger,
 		jobRepo,
+		applicationRepo,
 		authService,
 		s3Service,
 	)
