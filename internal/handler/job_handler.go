@@ -144,3 +144,29 @@ func (h *JobHandler) UpdateJob(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, job)
 }
+
+func (h *JobHandler) DeleteJob(ctx *gin.Context) {
+	ID := ctx.Param("id")
+	if ID == "" {
+		ctx.Error(ErrNotFound)
+		return
+	}
+
+	tracerCtx, span := tracer.Start(
+		ctx.Request.Context(),
+		util.GetSpanNameFromCaller(),
+		trace.WithAttributes(
+			attribute.String("id", ctx.Param("id")),
+		),
+	)
+	defer span.End()
+
+	err := h.repo.DeleteJob(tracerCtx, ID)
+
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusNoContent, nil)
+}

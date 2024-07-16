@@ -165,3 +165,12 @@ func (r *JobRepository) UpdateJob(ctx context.Context, ID string, dto UpdateJobD
 
 	return r.GetJobByID(ctx, ID)
 }
+
+// DeleteJob deletes a job
+func (r *JobRepository) DeleteJob(ctx context.Context, ID string) error {
+	if err := r.db.WithContext(ctx).Where("id = ?", ID).Delete(&model.Job{}).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
