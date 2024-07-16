@@ -23,6 +23,10 @@ func NewJobRepository(
 	}
 }
 
+var (
+	ErrJobSalaryRange = errors.New("salary_min must be less than or equal to salary_max")
+)
+
 type JobFilterParams struct {
 	model.PaginationParams
 
@@ -94,6 +98,43 @@ func (r *JobRepository) ListJobs(ctx context.Context, filterParams JobFilterPara
 func (r *JobRepository) GetJobByID(ctx context.Context, ID string) (*model.Job, error) {
 	var job model.Job
 	if err := r.db.WithContext(ctx).Where("id = ?", ID).First(&job).Error; err != nil {
+		return nil, err
+	}
+
+	return &job, nil
+}
+
+type JobValidator interface {
+	Validate() error
+}
+
+type CreateJobDTO struct {
+	Title     string `json:"title" binding:"required"`
+	Company   string `json:"company" binding:"required"`
+	JobType   string `json:"job_type" binding:"required,oneof=full-time part-time contract"`
+	SalaryMin int    `json:"salary_min" binding:"required"`
+	SalaryMax int    `json:"salary_max" binding:"required"`
+}
+
+func (dto CreateJobDTO) Validate() error {
+	if dto.SalaryMin > dto.SalaryMax {
+		return ErrJobSalaryRange
+	}
+
+	return nil
+}
+
+// CreateJob creates a new job
+func (r *JobRepository) CreateJob(ctx context.Context, dto CreateJobDTO) (*model.Job, error) {
+	job := model.Job{
+		Title:     dto.Title,
+		Company:   dto.Company,
+		JobType:   model.JobType(dto.JobType),
+		SalaryMin: dto.SalaryMin,
+		SalaryMax: dto.SalaryMax,
+	}
+
+	if err := r.db.WithContext(ctx).Create(&job).Error; err != nil {
 		return nil, err
 	}
 
