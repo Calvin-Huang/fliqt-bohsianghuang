@@ -16,6 +16,7 @@ func NewRouter(
 	app *gin.Engine,
 	logger *zerolog.Logger,
 	jobRepo *repository.JobRepository,
+	applicationRepo *repository.ApplicationRepository,
 	authService service.AuthServiceInterface,
 	s3Service service.S3ServiceInterface,
 ) {
@@ -31,4 +32,7 @@ func NewRouter(
 	fileHandler := NewFileHandler(cfg, authService, s3Service)
 	r.POST("/files", AuthHandler(authService, []model.UserRole{model.RoleCandidate}), fileHandler.GetUploadInfo)
 	r.GET("/files/*object_key", AuthHandler(authService, []model.UserRole{model.RoleHR, model.RoleInteviewer, model.RoleCandidate}), fileHandler.GetDownloadInfo)
+
+	applicationHandler := NewApplicationHandler(applicationRepo, logger, authService)
+	r.GET("/applications", AuthHandler(authService, []model.UserRole{model.RoleHR, model.RoleInteviewer, model.RoleCandidate}), applicationHandler.ListApplications)
 }
