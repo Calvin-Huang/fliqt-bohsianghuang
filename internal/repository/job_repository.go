@@ -140,3 +140,28 @@ func (r *JobRepository) CreateJob(ctx context.Context, dto CreateJobDTO) (*model
 
 	return &job, nil
 }
+
+type UpdateJobDTO struct {
+	Title     string `json:"title" binding:"required"`
+	Company   string `json:"company" binding:"required"`
+	JobType   string `json:"job_type" binding:"required,oneof=full-time part-time contract"`
+	SalaryMin int    `json:"salary_min" binding:"required"`
+	SalaryMax int    `json:"salary_max" binding:"required"`
+}
+
+func (dto UpdateJobDTO) Validate() error {
+	if dto.SalaryMin > dto.SalaryMax {
+		return ErrJobSalaryRange
+	}
+
+	return nil
+}
+
+// UpdateJob updates a job
+func (r *JobRepository) UpdateJob(ctx context.Context, ID string, dto UpdateJobDTO) (*model.Job, error) {
+	if err := r.db.WithContext(ctx).Model(&model.Job{}).Where("id = ?", ID).UpdateColumns(dto).Error; err != nil {
+		return nil, err
+	}
+
+	return r.GetJobByID(ctx, ID)
+}
