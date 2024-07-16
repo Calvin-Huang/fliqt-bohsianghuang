@@ -29,6 +29,6 @@ func NewRouter(
 	r.DELETE("/jobs/:id", AuthHandler(authService, []model.UserRole{model.RoleHR}), jobHandler.DeleteJob)
 
 	fileHandler := NewFileHandler(cfg, authService, s3Service)
-	r.POST("/files", fileHandler.GetUploadInfo)
 	r.GET("/files/*object_key", fileHandler.GetDownloadInfo)
+	r.POST("/files", AuthHandler(authService, []model.UserRole{model.RoleCandidate}), fileHandler.GetUploadInfo)
 }
