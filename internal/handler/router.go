@@ -35,4 +35,5 @@ func NewRouter(
 
 	applicationHandler := NewApplicationHandler(applicationRepo, logger, authService)
 	r.GET("/applications", AuthHandler(authService, []model.UserRole{model.RoleHR, model.RoleInteviewer, model.RoleCandidate}), applicationHandler.ListApplications)
+	r.POST("/applications", AuthHandler(authService, []model.UserRole{model.RoleCandidate}), applicationHandler.CreateApplication)
 }
