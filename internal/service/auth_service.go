@@ -37,6 +37,11 @@ func (s *AuthService) CurrentUser(ctx *gin.Context) (*model.User, error) {
 		return nil, ErrUnauthorized
 	}
 
+	cachedUser, ok := ctx.Get("current_user")
+	if ok {
+		return cachedUser.(*model.User), nil
+	}
+
 	var user model.User
 
 	if err := s.db.WithContext(ctx).Where("id", userID).First(&user).Error; err != nil {
@@ -45,6 +50,8 @@ func (s *AuthService) CurrentUser(ctx *gin.Context) (*model.User, error) {
 		}
 		return nil, err
 	}
+
+	ctx.Set("current_user", &user)
 
 	return &user, nil
 }
