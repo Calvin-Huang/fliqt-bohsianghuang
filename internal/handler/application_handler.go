@@ -63,6 +63,11 @@ func (h *ApplicationHandler) ListApplications(ctx *gin.Context) {
 		filterParams.UserID = &user.ID
 	}
 
+	if ctx.Param("id") != "" {
+		jobID := ctx.Param("id")
+		filterParams.JobID = &jobID
+	}
+
 	applications, err := h.applicationRepo.ListApplications(tracerCtx, filterParams)
 	if err != nil {
 		ctx.Error(err)

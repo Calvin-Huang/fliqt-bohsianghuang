@@ -22,6 +22,12 @@ func NewRouter(
 ) {
 	r := app.Group("/api")
 
+	applicationHandler := NewApplicationHandler(applicationRepo, logger, authService)
+	r.GET("/applications", AuthHandler(authService, []model.UserRole{model.RoleHR, model.RoleInteviewer, model.RoleCandidate}), applicationHandler.ListApplications)
+	r.POST("/applications", AuthHandler(authService, []model.UserRole{model.RoleCandidate}), applicationHandler.CreateApplication)
+
+	r.GET("/jobs/:id/applications", AuthHandler(authService, []model.UserRole{model.RoleHR, model.RoleInteviewer, model.RoleCandidate}), applicationHandler.ListApplications)
+
 	jobHandler := NewJobHandler(jobRepo, logger)
 	r.GET("/jobs", jobHandler.ListJobs)
 	r.GET("/jobs/:id", jobHandler.GetJob)
@@ -32,8 +38,4 @@ func NewRouter(
 	fileHandler := NewFileHandler(cfg, authService, s3Service)
 	r.POST("/files", AuthHandler(authService, []model.UserRole{model.RoleCandidate}), fileHandler.GetUploadInfo)
 	r.GET("/files/*object_key", AuthHandler(authService, []model.UserRole{model.RoleHR, model.RoleInteviewer, model.RoleCandidate}), fileHandler.GetDownloadInfo)
-
-	applicationHandler := NewApplicationHandler(applicationRepo, logger, authService)
-	r.GET("/applications", AuthHandler(authService, []model.UserRole{model.RoleHR, model.RoleInteviewer, model.RoleCandidate}), applicationHandler.ListApplications)
-	r.POST("/applications", AuthHandler(authService, []model.UserRole{model.RoleCandidate}), applicationHandler.CreateApplication)
 }

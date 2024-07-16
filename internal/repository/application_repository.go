@@ -30,6 +30,7 @@ type ApplicationFilterParams struct {
 	Keyword string `form:"keyword,omitempty"`
 
 	UserID *string `form:",omitempty"`
+	JobID  *string `form:",omitempty"`
 }
 
 type ApplicationResponseDTO struct {
@@ -72,6 +73,10 @@ func (r *ApplicationRepository) ListApplications(ctx context.Context, filterPara
 
 	if filterParams.UserID != nil {
 		query = query.Where("applications.user_id = ?", *filterParams.UserID)
+	}
+
+	if filterParams.JobID != nil {
+		query = query.Where("applications.job_id = ?", *filterParams.JobID)
 	}
 
 	var total int64
