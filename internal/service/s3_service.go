@@ -18,6 +18,7 @@ const (
 
 type S3ServiceInterface interface {
 	PresignUpload(ctx context.Context, bucket, userID string, objectKey string, contentType string, fileSize int64) (string, error)
+	GetPresignDownloadURL(ctx context.Context, bucket, objectKey string) (string, error)
 }
 
 type S3Service struct {
@@ -65,6 +66,24 @@ func (s *S3Service) PresignUpload(ctx context.Context, bucket string, userID str
 	// Cache the presigned URL, ensure the presigned URL can't be generated too frequently.
 	if err := s.redisClient.Set(ctx, cacheKey, s3Req.URL, presignedUrlCacheTTL).Err(); err != nil {
 		return s3Req.URL, err
+	}
+
+	return s3Req.URL, nil
+}
+
+func (s *S3Service) GetPresignDownloadURL(ctx context.Context, bucket string, objectKey string) (string, error) {
+	// Get the presigned URL from S3
+	s3Req, err := s.s3PresignClient.PresignGetObject(ctx,
+		&s3.GetObjectInput{
+			Bucket: aws.String(bucket),
+			Key:    aws.String(objectKey),
+		},
+		func(po *s3.PresignOptions) {
+			po.Expires = presignedUrlExpiration
+		},
+	)
+	if err != nil {
+		return "", err
 	}
 
 	return s3Req.URL, nil

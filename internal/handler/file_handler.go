@@ -81,3 +81,28 @@ func (h *FileHandler) GetUploadInfo(ctx *gin.Context) {
 		Metadata:  nil,
 	})
 }
+
+func (h *FileHandler) GetDownloadInfo(ctx *gin.Context) {
+	objectKey := ctx.Param("object_key")
+
+	user, err := h.authService.CurrentUser(ctx)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	if !strings.HasPrefix(objectKey, fmt.Sprintf("/%s", user.ID)) {
+		ctx.Error(ErrForbidden)
+		return
+	}
+
+	URL, err := h.s3Service.GetPresignDownloadURL(ctx, h.cfg.S3Bucket, objectKey)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"url": URL,
+	})
+}

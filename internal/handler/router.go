@@ -30,4 +30,5 @@ func NewRouter(
 
 	fileHandler := NewFileHandler(cfg, authService, s3Service)
 	r.POST("/files", fileHandler.GetUploadInfo)
+	r.GET("/files/*object_key", fileHandler.GetDownloadInfo)
 }
