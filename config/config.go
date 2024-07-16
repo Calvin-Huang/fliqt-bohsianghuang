@@ -23,6 +23,8 @@ type Config struct {
 	PrettyLog bool
 
 	TracerEndpoint string
+
+	RedisURL string
 }
 
 func NewConfig() *Config {
@@ -41,6 +43,8 @@ func NewConfig() *Config {
 		PrettyLog: getEnv("PRETTY_LOG", "false") == "true",
 
 		TracerEndpoint: getEnv("TRACER_ENDPOINT", "localhost:4317"),
+
+		RedisURL: getEnv("REDIS_URL", "redis://localhost:6379"),
 	}
 }
 
