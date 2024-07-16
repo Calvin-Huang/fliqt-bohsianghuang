@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fliqt/config"
+	"fmt"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -11,11 +12,12 @@ import (
 )
 
 const (
-	expiration = 5 * time.Minute
+	presignedUrlExpiration = 5 * time.Minute
+	presignedUrlCacheTTL   = 30 * time.Second
 )
 
 type S3ServiceInterface interface {
-	PresignUpload(ctx context.Context, bucket, objectKey string, contentType string, fileSize int64) (string, error)
+	PresignUpload(ctx context.Context, bucket, userID string, objectKey string, contentType string, fileSize int64) (string, error)
 }
 
 type S3Service struct {
@@ -36,7 +38,13 @@ func NewS3Service(
 	}
 }
 
-func (s *S3Service) PresignUpload(ctx context.Context, bucket string, objectKey string, contentType string, fileSize int64) (string, error) {
+func (s *S3Service) PresignUpload(ctx context.Context, bucket string, userID string, objectKey string, contentType string, fileSize int64) (string, error) {
+	cacheKey := fmt.Sprintf("upload_tmp:%s/%s", bucket, userID)
+	previousPresignedURL, err := s.redisClient.Get(ctx, cacheKey).Result()
+	if err == nil {
+		return previousPresignedURL, nil
+	}
+
 	// Get the presigned URL from S3
 	s3Req, err := s.s3PresignClient.PresignPutObject(ctx,
 		&s3.PutObjectInput{
@@ -47,11 +55,16 @@ func (s *S3Service) PresignUpload(ctx context.Context, bucket string, objectKey 
 			ContentLength: aws.Int64(fileSize),
 		},
 		func(po *s3.PresignOptions) {
-			po.Expires = expiration
+			po.Expires = presignedUrlExpiration
 		},
 	)
 	if err != nil {
 		return "", err
+	}
+
+	// Cache the presigned URL, ensure the presigned URL can't be generated too frequently.
+	if err := s.redisClient.Set(ctx, cacheKey, s3Req.URL, presignedUrlCacheTTL).Err(); err != nil {
+		return s3Req.URL, err
 	}
 
 	return s3Req.URL, nil

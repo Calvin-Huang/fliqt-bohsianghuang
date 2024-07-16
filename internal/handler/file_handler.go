@@ -69,7 +69,7 @@ func (h *FileHandler) GetUploadInfo(ctx *gin.Context) {
 	ID := xid.New().String()
 	objectKey := fmt.Sprintf("%s/%s", user.ID, ID)
 
-	URL, err := h.s3Service.PresignUpload(ctx, h.cfg.S3Bucket, objectKey, req.ContentType, req.FileSize)
+	URL, err := h.s3Service.PresignUpload(ctx, h.cfg.S3Bucket, user.ID, objectKey, req.ContentType, req.FileSize)
 	if err != nil {
 		ctx.Error(err)
 		return
