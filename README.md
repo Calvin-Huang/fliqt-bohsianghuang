@@ -119,6 +119,11 @@ Or simply use the prepared `docker-compose.yaml` to start the service
 $ docker-compose up --build
 ```
 
+## Tracing
+The API relies on OpenTelemetry for tracing. You can set the tracer endpoint depending on which tracing backend you prefer.
+
+By default, Jaeger is integrated in docker-compose.yml. You can observe the traces by visiting http://localhost:16686 once Docker Compose is up and running.
+
 # Run tests
 To execute tests, run the following command:
 ```sh
