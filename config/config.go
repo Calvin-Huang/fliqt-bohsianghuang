@@ -25,6 +25,12 @@ type Config struct {
 	TracerEndpoint string
 
 	RedisURL string
+
+	S3Endpoint string
+	S3Bucket   string
+	S3Region   string
+	S3Key      string
+	S3Secret   string
 }
 
 func NewConfig() *Config {
@@ -45,6 +51,12 @@ func NewConfig() *Config {
 		TracerEndpoint: getEnv("TRACER_ENDPOINT", "localhost:4317"),
 
 		RedisURL: getEnv("REDIS_URL", "redis://localhost:6379"),
+
+		S3Endpoint: getEnv("S3_ENDPOINT", "http://localhost:9000"),
+		S3Bucket:   getEnv("S3_BUCKET", "fliqt"),
+		S3Region:   getEnv("S3_REGION", "us-east-1"),
+		S3Key:      getEnv("S3_KEY", ""),
+		S3Secret:   getEnv("S3_SECRET", ""),
 	}
 }
 

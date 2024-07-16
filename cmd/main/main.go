@@ -23,6 +23,11 @@ func main() {
 	}
 	app := gin.Default()
 
+	s3Client, err := util.NewS3Client(cfg)
+	if err != nil {
+		panic(err)
+	}
+
 	db, err := util.NewGormDB(cfg)
 	if err != nil {
 		panic(err)
@@ -45,6 +50,7 @@ func main() {
 
 	handler.NewRouter(
 		app,
+		s3Client,
 		logger,
 		jobRepo,
 		authService,

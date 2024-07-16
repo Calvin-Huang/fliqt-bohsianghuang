@@ -5,12 +5,14 @@ import (
 	"fliqt/internal/repository"
 	"fliqt/internal/service"
 
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 )
 
 func NewRouter(
 	app *gin.Engine,
+	s3Client *s3.Client,
 	logger *zerolog.Logger,
 	jobRepo *repository.JobRepository,
 	authService service.AuthServiceInterface,
