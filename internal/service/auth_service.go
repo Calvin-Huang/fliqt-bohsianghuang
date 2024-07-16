@@ -7,6 +7,10 @@ import (
 	"fliqt/internal/model"
 )
 
+type AuthServiceInterface interface {
+	CurrentUser(ctx *gin.Context) (*model.User, error)
+}
+
 type AuthService struct {
 	db *gorm.DB
 }

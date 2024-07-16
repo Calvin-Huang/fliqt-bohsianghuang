@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AuthHandler(authService *service.AuthService, allowedRoles []model.UserRole) gin.HandlerFunc {
+func AuthHandler(authService service.AuthServiceInterface, allowedRoles []model.UserRole) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user, err := authService.CurrentUser(c)
 		if err != nil {
