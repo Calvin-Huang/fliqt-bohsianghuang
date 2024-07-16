@@ -8,6 +8,7 @@ import (
 	"fliqt/config"
 	"fliqt/internal/handler"
 	"fliqt/internal/repository"
+	"fliqt/internal/service"
 	"fliqt/internal/util"
 )
 
@@ -30,6 +31,9 @@ func main() {
 	// Initialize repositories
 	jobRepo := repository.NewJobRepository(db, logger)
 
+	// Initialize services
+	authService := service.NewAuthService(db)
+
 	// OpenTelemetry tracing, can be ignored when there's no setup for tracing when developing locally.
 	if err := util.InitTracer(cfg); err != nil {
 		logger.Info().Msgf("Failed to initialize tracer: %v", err)
@@ -43,6 +47,7 @@ func main() {
 		app,
 		logger,
 		jobRepo,
+		authService,
 	)
 
 	if err := app.Run(); err != nil {
