@@ -10,6 +10,7 @@ import (
 	"gorm.io/gorm"
 
 	"fliqt/internal/repository"
+	"fliqt/internal/service"
 )
 
 var (
@@ -25,6 +26,8 @@ var errStatusMap = map[error]int{
 	ErrForbidden:           http.StatusForbidden,
 
 	repository.ErrJobSalaryRange: http.StatusBadRequest,
+
+	service.ErrUnauthorized: http.StatusUnauthorized,
 }
 
 func ErrorHandler(logger *zerolog.Logger) gin.HandlerFunc {
