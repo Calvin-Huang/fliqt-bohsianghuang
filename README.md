@@ -39,6 +39,12 @@ $ curl -H 'X-FLIQT-USER: [candidate 1's id]' http://localhost:8080/api/applicati
 |`DEBUG`| Config for debugging mode | `false` |
 |`PRETTY_LOG`| Easier to read the log | `false` |
 |`TRACER_ENDPOINT`| The tracer collector's endpoint | `localhost:4317` |
+|`REDIS_URL`| Redis URL | `redis://localhost:6379` |
+|`S3_ENDPOINT`| S3 endpoint, we're using minio as default | `http://localhost:9000` |
+|`S3_BUCKET`| S3 bucket name | `fliqt` |
+|`S3_REGION`| S3 region, and its meanless when using minio | `us-east-1` |
+|`S3_KEY`| S3 access key |  |
+|`S3_SECRET`| S3 secrey key |  |
 
 # Migrations
 This project uses `github.com/go-gormigrate/gormigrate` as the migrator base and includes a small program to execute migrations.
@@ -58,3 +64,20 @@ $ go run cmd/migrate/main.go -rollback -version=10
 $ go run cmd/migrate/main.go -rollback-to=10
 ```
 
+Or you can use the `Makefile` to run migrations.
+```sh
+# Mofidy the .env file for your settings.
+$ make dev-db-migrate
+$ make dev-db-rollback
+```
+
+# To start the API server
+```sh
+$ docker build -t fliqt-test .
+$ docker run --name fliqt-test -p8080:8080 --env DB_NAME=[DB name] --env DB_PASSWORD=[DB password] --env DEBUG=true --env PRETTY_LOG=true fliqt-test:latest ./dist-main
+```
+
+Or simply use the prepared `docker-compose.yaml` to start the service
+```sh
+$ docker-compose up --build
+```
