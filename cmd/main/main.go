@@ -23,7 +23,7 @@ func main() {
 	}
 	app := gin.Default()
 
-	s3Client, err := util.NewS3Client(cfg)
+	s3PresignClient, err := util.NewS3PresignClient(cfg)
 	if err != nil {
 		panic(err)
 	}
@@ -38,6 +38,7 @@ func main() {
 
 	// Initialize services
 	authService := service.NewAuthService(db)
+	s3Service := service.NewS3Service(cfg, redisClient, s3PresignClient)
 
 	// OpenTelemetry tracing, can be ignored when there's no setup for tracing when developing locally.
 	if err := util.InitTracer(cfg); err != nil {
@@ -49,11 +50,12 @@ func main() {
 	app.NoRoute(handler.NotFoundHandler())
 
 	handler.NewRouter(
+		cfg,
 		app,
-		s3Client,
 		logger,
 		jobRepo,
 		authService,
+		s3Service,
 	)
 
 	if err := app.Run(); err != nil {
