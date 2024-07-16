@@ -21,4 +21,5 @@ func NewRouter(
 	r.GET("/jobs", jobHandler.ListJobs)
 	r.GET("/jobs/:id", jobHandler.GetJob)
 	r.POST("/jobs", AuthHandler(authService, []model.UserRole{model.RoleHR}), jobHandler.CreateJob)
+	r.PUT("/jobs/:id", AuthHandler(authService, []model.UserRole{model.RoleHR}), jobHandler.UpdateJob)
 }
