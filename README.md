@@ -88,6 +88,26 @@ $ make dev-db-migrate
 $ make dev-db-rollback
 ```
 
+## Seed data
+
+Jobs
+| id                       | title                  | company   | job_type | salary_min | salary_max |
+|--------------------------|------------------------|-----------|----------|------------|------------|
+| cqanjjocvavk14kcpc9g     | Software Engineer      | Google    | full-time | 100000     | 200000     |
+| cqank1gcvavk2ohtbi90     | Software Engineer      | Facebook  | full-time | 100000     | 200000     |
+| cqank6ocvavk3bku7rhg     | Software Engineer      | Amazon    | full-time | 100000     | 200000     |
+| cqank8gcvavk3o6tsqb0     | Software Engineer      | Apple     | full-time | 100000     | 200000     |
+| cqankhocvavk4lkbb63g     | Sr. Software Engineer  | Google    | full-time | 200000     | 300000     |
+| cqanl4gcvavk5aka0am0     | Infrastructure Engineer| Facebook  | full-time | 150000     | 200000     |
+| cqanlbocvavk60s8l840     | Designer Manager       | Amazon    | full-time | 100000     | 200000     |
+
+Users
+| id                       | role         | totp_secret                      |
+|--------------------------|--------------|-----------------------------------|
+| cqan84gcvavjif3csp4g     | hr           | UGLOBAFSYEIDW52JGKUEFEQFEB3RZFYL  |
+| cqanb5gcvavjneudu13g     | interviewer  | 7KIHH3TKGHNS67UHG4JLS5QPYN4SKTQC  |
+| cqanbg8cvavjpljmh7pg     | candidate    | TXMJIAOMR42PQP2A5JWC7SPOIHEKI3X2  |
+
 # To start the API server
 ```sh
 $ docker build -t fliqt-test .
