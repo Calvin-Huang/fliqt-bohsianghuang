@@ -75,3 +75,34 @@ func (h *JobHandler) GetJob(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, account)
 }
+
+func (h *JobHandler) CreateJob(ctx *gin.Context) {
+	var req repository.CreateJobDTO
+	if err := ctx.BindJSON(&req); err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	tracerCtx, span := tracer.Start(
+		ctx.Request.Context(),
+		util.GetSpanNameFromCaller(),
+		trace.WithAttributes(
+			attribute.String("request", fmt.Sprintf("%+v", req)),
+		),
+	)
+	defer span.End()
+
+	if err := req.Validate(); err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	job, err := h.repo.CreateJob(tracerCtx, req)
+
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, job)
+}
