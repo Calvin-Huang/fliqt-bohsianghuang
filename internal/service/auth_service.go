@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/gin-gonic/gin"
+	"github.com/pquerna/otp/totp"
 	"gorm.io/gorm"
 
 	"fliqt/internal/model"
@@ -11,10 +12,12 @@ import (
 
 var (
 	ErrUnauthorized = errors.New("unauthorized")
+	ErrFailedTOTP   = errors.New("failed to verify TOTP")
 )
 
 type AuthServiceInterface interface {
 	CurrentUser(ctx *gin.Context) (*model.User, error)
+	VerifyTOTP(ctx *gin.Context, secret string, passcode string) error
 }
 
 type AuthService struct {
@@ -44,4 +47,12 @@ func (s *AuthService) CurrentUser(ctx *gin.Context) (*model.User, error) {
 	}
 
 	return &user, nil
+}
+
+func (s *AuthService) VerifyTOTP(ctx *gin.Context, secret string, passcode string) error {
+	if !totp.Validate(passcode, secret) {
+		return ErrFailedTOTP
+	}
+
+	return nil
 }

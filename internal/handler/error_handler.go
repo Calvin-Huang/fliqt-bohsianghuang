@@ -28,6 +28,7 @@ var errStatusMap = map[error]int{
 	repository.ErrJobSalaryRange: http.StatusBadRequest,
 
 	service.ErrUnauthorized: http.StatusUnauthorized,
+	service.ErrFailedTOTP:   http.StatusUnauthorized,
 }
 
 func ErrorHandler(logger *zerolog.Logger) gin.HandlerFunc {
