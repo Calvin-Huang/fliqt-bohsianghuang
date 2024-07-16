@@ -106,3 +106,41 @@ func (h *JobHandler) CreateJob(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, job)
 }
+
+func (h *JobHandler) UpdateJob(ctx *gin.Context) {
+	var req repository.UpdateJobDTO
+	if err := ctx.BindJSON(&req); err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	tracerCtx, span := tracer.Start(
+		ctx.Request.Context(),
+		util.GetSpanNameFromCaller(),
+		trace.WithAttributes(
+			attribute.String("id", ctx.Param("id")),
+			attribute.String("request", fmt.Sprintf("%+v", req)),
+		),
+	)
+	defer span.End()
+
+	ID := ctx.Param("id")
+	if ID == "" {
+		ctx.Error(ErrNotFound)
+		return
+	}
+
+	if err := req.Validate(); err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	job, err := h.repo.UpdateJob(tracerCtx, ID, req)
+
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, job)
+}
