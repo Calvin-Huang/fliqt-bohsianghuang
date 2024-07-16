@@ -24,6 +24,11 @@ docker-build:
 		--build-arg GOLANG_VERSION=${GOLANG_VERSION} \
 		-f Dockerfile -t ${REGISTRY}:${IMAGE_TAG} --push .
 
+.PHONY: docker-compose-run
+# Run docker-compose
+docker-compose-run:
+	@docker-compose up --build
+
 # show help
 help:
 	@echo ''
