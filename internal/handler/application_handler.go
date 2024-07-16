@@ -7,6 +7,7 @@ import (
 	"fliqt/internal/util"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -69,4 +70,45 @@ func (h *ApplicationHandler) ListApplications(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, applications)
+}
+
+// CreateApplication creates a new application
+func (h *ApplicationHandler) CreateApplication(ctx *gin.Context) {
+	var req repository.CreateApplicationDTO
+	if err := ctx.BindJSON(&req); err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	tracerCtx, span := tracer.Start(
+		ctx.Request.Context(),
+		util.GetSpanNameFromCaller(),
+		trace.WithAttributes(
+			attribute.String("request", fmt.Sprintf("%+v", req)),
+		),
+	)
+	defer span.End()
+
+	user, err := h.authService.CurrentUser(ctx)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	req.UserID = user.ID
+
+	// Ensure users attache their own resume
+	if strings.HasPrefix(req.ResumeObjectKey, fmt.Sprintf("%s/", user.ID)) {
+		ctx.Error(ErrForbidden)
+		return
+	}
+
+	application, err := h.applicationRepo.CreateApplication(tracerCtx, req)
+
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, application)
 }
