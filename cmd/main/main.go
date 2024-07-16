@@ -33,6 +33,11 @@ func main() {
 		panic(err)
 	}
 
+	redisClient, err := util.NewClient(cfg)
+	if err != nil {
+		panic(err)
+	}
+
 	// Initialize repositories
 	jobRepo := repository.NewJobRepository(db, logger)
 
