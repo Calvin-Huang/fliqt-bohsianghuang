@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fliqt/internal/model"
 
 	"github.com/rs/zerolog"
@@ -76,9 +77,7 @@ func (r *JobRepository) ListJobs(ctx context.Context, filterParams JobFilterPara
 		query = query.Where("id < ?", filterParams.NextToken)
 	}
 
-	if filterParams.PageSize > 0 {
-		query = query.Limit(filterParams.PageSize)
-	}
+	query = query.Limit(filterParams.PageSize)
 
 	if err := query.Find(&jobs).Error; err != nil {
 		return result, err
