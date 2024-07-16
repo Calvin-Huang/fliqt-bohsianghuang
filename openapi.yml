@@ -10,7 +10,31 @@ components:
     X-FLIQT-USER:
       name: X-FLIQT-USER
       description: "Set current user by ID"
-      example: cqa2iqgcvavkhusfkebg
+      example: cqan84gcvavjif3csp4g
+      in: header
+      required: true
+      schema:
+        type: string
+    X-FLIQT-USER_HR:
+      name: X-FLIQT-USER
+      description: "Set current user by ID (example ID for HR)"
+      example: cqan84gcvavjif3csp4g
+      in: header
+      required: true
+      schema:
+        type: string
+    X-FLIQT-USER_INTERVIEWER:
+      name: X-FLIQT-USER
+      description: "Set current user by ID (example ID for Interviewer)"
+      example: cqanb5gcvavjneudu13g
+      in: header
+      required: true
+      schema:
+        type: string
+    X-FLIQT-USER_CANDIDATE:
+      name: X-FLIQT-USER
+      description: "Set current user by ID (example ID for Candidate)"
+      example: cqanbg8cvavjpljmh7pg
       in: header
       required: true
       schema:
@@ -180,7 +204,7 @@ paths:
           required: true
           schema:
             type: string
-        - $ref: "#/components/parameters/X-FLIQT-USER"
+        - $ref: "#/components/parameters/X-FLIQT-USER_HR"
       requestBody:
         required: true
         content:
@@ -206,7 +230,7 @@ paths:
           required: true
           schema:
             type: string
-        - $ref: "#/components/parameters/X-FLIQT-USER"
+        - $ref: "#/components/parameters/X-FLIQT-USER_HR"
       responses:
         "204":
           description: "Job closed"
@@ -217,6 +241,7 @@ paths:
   /jobs/{job_id}/applications:
     get:
       parameters:
+        - $ref: "#/components/parameters/X-FLIQT-USER"
         - name: job_id
           in: path
           required: true
@@ -255,6 +280,7 @@ paths:
     get:
       description: "Candidate's applications (HR can see all)"
       parameters:
+        - $ref: "#/components/parameters/X-FLIQT-USER"
         - name: page_size
           in: query
           schema:
@@ -292,7 +318,8 @@ paths:
     post:
       description: "Candidate applies for a job"
       parameters:
-        - $ref: "#/components/parameters/X-FLIQT-USER"
+        - $ref: "#/components/parameters/X-FLIQT-USER_CANDIDATE"
+
       requestBody:
         required: true
         content:
@@ -313,7 +340,7 @@ paths:
       summary: "Get a pre-signed URL to upload a file"
       description: "Pre-signed URL will expire in 5 minutes"
       parameters:
-        - $ref: "#/components/parameters/X-FLIQT-USER"
+        - $ref: "#/components/parameters/X-FLIQT-USER_CANDIDATE"
       requestBody:
         required: true
         content:
@@ -355,7 +382,7 @@ paths:
           required: true
           schema:
             type: string
-        - $ref: "#/components/parameters/X-FLIQT-USER"
+        - $ref: "#/components/parameters/X-FLIQT-USER_CANDIDATE"
         - name: passcode
           description: "TOTP passcode to download file"
           in: query
