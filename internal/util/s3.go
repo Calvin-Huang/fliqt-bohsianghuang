@@ -11,7 +11,7 @@ import (
 	"fliqt/config"
 )
 
-func NewS3Client(cfg *config.Config) (*s3.Client, error) {
+func NewS3PresignClient(cfg *config.Config) (*s3.PresignClient, error) {
 	creds := credentials.NewStaticCredentialsProvider(
 		cfg.S3Key,
 		cfg.S3Secret,
@@ -29,7 +29,10 @@ func NewS3Client(cfg *config.Config) (*s3.Client, error) {
 		return nil, err
 	}
 
-	return s3.NewFromConfig(s3cfg, func(o *s3.Options) {
+	client := s3.NewFromConfig(s3cfg, func(o *s3.Options) {
+		o.UsePathStyle = true
 		o.BaseEndpoint = aws.String(cfg.S3Endpoint)
-	}), nil
+	})
+
+	return s3.NewPresignClient(client), nil
 }
