@@ -6,6 +6,16 @@ VERSION=$(shell git describe --tags --always)
 include .env
 export
 
+.PHONY: dev-db-migrate
+# Run database migrations
+dev-db-migrate:
+	@go run cmd/migrate/main.go
+
+.PHONY: dev-db-rollback
+# Rollback database migrations
+dev-db-rollback:
+	@go run cmd/migrate/main.go -rollback
+
 .PHONY: docker-build
 # Build docker image
 docker-build:
