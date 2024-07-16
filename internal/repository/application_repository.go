@@ -96,3 +96,22 @@ func (r *ApplicationRepository) ListApplications(ctx context.Context, filterPara
 
 	return result, nil
 }
+
+type CreateApplicationDTO struct {
+	JobID           string `json:"job_id" binding:"required"`
+	UserID          string `json:"user_id" binding:"required"`
+	ResumeObjectKey string `json:"resume_object_key" binding:"required"`
+}
+
+func (r *ApplicationRepository) CreateApplication(ctx context.Context, dto CreateApplicationDTO) (model.Application, error) {
+	application := model.Application{
+		JobID:           dto.JobID,
+		UserID:          dto.UserID,
+		ResumeObjectKey: dto.ResumeObjectKey,
+	}
+	if err := r.db.WithContext(ctx).Create(&application).Error; err != nil {
+		return model.Application{}, err
+	}
+
+	return application, nil
+}
