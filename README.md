@@ -118,3 +118,9 @@ Or simply use the prepared `docker-compose.yaml` to start the service
 ```sh
 $ docker-compose up --build
 ```
+
+# Run tests
+To execute tests, run the following command:
+```sh
+$ go test ./...
+```
