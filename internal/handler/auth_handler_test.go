@@ -21,6 +21,9 @@ func (m *mockedAuthServiceForHR) CurrentUser(ctx *gin.Context) (*model.User, err
 		Role: model.RoleHR,
 	}, nil
 }
+func (m *mockedAuthServiceForHR) VerifyTOTP(ctx *gin.Context, secret string, passcode string) error {
+	return nil
+}
 
 func TestAuthHandler(t *testing.T) {
 	authService := &mockedAuthServiceForHR{}
