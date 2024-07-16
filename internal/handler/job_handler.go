@@ -104,7 +104,7 @@ func (h *JobHandler) CreateJob(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, job)
+	ctx.JSON(http.StatusCreated, job)
 }
 
 func (h *JobHandler) UpdateJob(ctx *gin.Context) {
