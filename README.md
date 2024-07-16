@@ -23,6 +23,23 @@ I also simplified user authentication for users. You can easily use the `X-FLIQT
 $ curl -H 'X-FLIQT-USER: [candidate 1's id]' http://localhost:8080/api/applications
 ```
 
+## Documentations
+
+### OpenAPI
+You can find the `openapi.yml` at the root of this project and also a exported OpenAPI html file - `openapi.html` rendered by ReDoc2.
+
+To update `openapi.html` -
+```sh
+$ docker run --rm -v $PWD:/spec redocly/cli build-docs openapi.yml -o openapi.html
+```
+
+### Flowcharts / Infrastructure
+
+![HR_system-Behaviors.webp](HR_system-Behaviors.webp)
+![HR_system-Infrastruature.webp](HR_system-Infrastruature.webp)
+
+https://drive.google.com/file/d/1vYn7QidvFYOtyiVChvJDVu_SOAKcQ1wo/view?usp=sharing
+
 # How to Run the Code
 ## Environment Variables
 | Name | Description | Default |
