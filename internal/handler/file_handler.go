@@ -97,6 +97,20 @@ func (h *FileHandler) GetDownloadInfo(ctx *gin.Context) {
 		return
 	}
 
+	// Verify TOTP when user is HR or Interviewer
+	if user.Role != model.RoleCandidate {
+		passcode, ok := ctx.GetQuery("passcode")
+		if !ok {
+			ctx.Error(ErrBadRequest)
+			return
+		}
+
+		if err := h.authService.VerifyTOTP(ctx, user.TotpSecret, passcode); err != nil {
+			ctx.Error(err)
+			return
+		}
+	}
+
 	URL, err := h.s3Service.GetPresignDownloadURL(ctx, h.cfg.S3Bucket, objectKey)
 	if err != nil {
 		ctx.Error(err)
