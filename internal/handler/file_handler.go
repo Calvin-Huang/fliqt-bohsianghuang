@@ -8,6 +8,7 @@ import (
 	"github.com/rs/xid"
 
 	"fliqt/config"
+	"fliqt/internal/model"
 	"fliqt/internal/service"
 )
 
@@ -91,7 +92,7 @@ func (h *FileHandler) GetDownloadInfo(ctx *gin.Context) {
 		return
 	}
 
-	if !strings.HasPrefix(objectKey, fmt.Sprintf("/%s", user.ID)) {
+	if user.Role == model.RoleCandidate && !strings.HasPrefix(objectKey, fmt.Sprintf("/%s", user.ID)) {
 		ctx.Error(ErrForbidden)
 		return
 	}
