@@ -3,10 +3,13 @@ package handler
 import (
 	"fliqt/internal/repository"
 	"fliqt/internal/util"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type JobHandler struct {
@@ -26,14 +29,20 @@ func NewJobHandler(
 
 // ListJobs is a handler for listing all jobs.
 func (h *JobHandler) ListJobs(ctx *gin.Context) {
-	tracerCtx, span := tracer.Start(ctx.Request.Context(), util.GetSpanNameFromCaller())
-	defer span.End()
-
 	var filterParams repository.JobFilterParams
 	if err := ctx.ShouldBindQuery(&filterParams); err != nil {
 		ctx.Error(err)
 		return
 	}
+
+	tracerCtx, span := tracer.Start(
+		ctx.Request.Context(),
+		util.GetSpanNameFromCaller(),
+		trace.WithAttributes(
+			attribute.String("query", fmt.Sprintf("%+v", filterParams)),
+		),
+	)
+	defer span.End()
 
 	filterParams.Normalize()
 
